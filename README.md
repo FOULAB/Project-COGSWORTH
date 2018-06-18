@@ -1,5 +1,5 @@
 # PROJECT COGSWORTH
-## An attempt at seeing what would happen if a pidgeon #@!$#@ a wifi chipset.
+### An attempt at seeing wifi
 
 **What_Does_The_Scouter_Say_About_His_Power_Level.grc** The GNU Radio program that reads off the HackRF connected to the antenna we wiggle around with robotic (handcut) precision. Outputs the signal power level onto the network as UDP packets stuffed with a chewy little endian 32 bit float center. Spared no expense! (Nervously checks for raptors...)  
   
