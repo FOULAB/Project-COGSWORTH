@@ -74,7 +74,14 @@ if __name__ == '__main__':
     print("processing...")
 
     for PXL in tqdm.tqdm(pewl.imap_unordered(processing, DUMPS), total=len(DUMPS)):
-        PIXELS[ HORIZONTAL-1-PXL[1], PXL[2] ] = (PXL[5], PXL[5], PXL[5])
+        # correcting for even vertical pixel data being generated
+        # from and upward sweep of the antenna, and vice versa for the odd case
+        if PXL[1]/2 == PXL[1]/2.0:
+            reverse = 0
+        else:
+            reverse = VERTICAL - 1
+
+        PIXELS[ HORIZONTAL-1-PXL[1], abs(PXL[2] - reverse) ] = (PXL[5], PXL[5], PXL[5])
         
     print("done.")
         
