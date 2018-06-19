@@ -18,3 +18,4 @@ To go with the following video series...
   
 Part 1 => https://www.youtube.com/watch?v=o6WHhqDHSQ4  
 Part 2 => https://www.youtube.com/watch?v=VABeN4uv03s  
+Part 3 => https://www.youtube.com/watch?v=g3LT_b6K0Mc
