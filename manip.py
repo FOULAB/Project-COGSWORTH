@@ -5,6 +5,7 @@ import tqdm
 import multiprocessing as mp
 from bitstring import ConstBitStream
 from PIL import Image
+import numpy as np
 
 # 70
 # 80
