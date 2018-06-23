@@ -5,6 +5,7 @@ import tqdm
 import multiprocessing as mp
 from bitstring import ConstBitStream
 from PIL import Image
+import numpy as np
 
 # 70
 # 80
@@ -54,6 +55,26 @@ def processing(params):
     return hold
     #print("{0} : [{1},{2}]".format(average,pI,pJ)) # DEBUG
 
+def processing2(params):
+    pStamp = params[0]
+    pI = params[1]
+    pJ = params[2]
+    VER = params[3]
+    HOR = params[4]
+    PXLS = params[5]
+    
+    fname = 'SAMPLE_{0}_{1}_{2}.dmp'.format(pStamp, str(pI), str(pJ) )
+
+    tech = np.fromfile(fname, "float32")
+
+    ## DATA MANIP START
+    average = tech.mean()
+    
+    colour = int( (average/100)*255 )
+    hold = [ pStamp, pI, pJ, VER, HOR, colour ]
+    del(tech)
+    return hold
+
 
 if __name__ == '__main__':
     
@@ -73,7 +94,7 @@ if __name__ == '__main__':
     pewl = mp.Pool(3)
     print("processing...")
 
-    for PXL in tqdm.tqdm(pewl.imap_unordered(processing, DUMPS), total=len(DUMPS)):
+    for PXL in tqdm.tqdm(pewl.imap_unordered(processing2, DUMPS), total=len(DUMPS)):
         # correcting for even vertical pixel data being generated
         # from and upward sweep of the antenna, and vice versa for the odd case
         if PXL[1]/2 == PXL[1]/2.0:
