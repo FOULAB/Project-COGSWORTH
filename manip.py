@@ -127,7 +127,7 @@ def main():
     for PXL in tqdm.tqdm(pewl.imap_unordered(processing, DUMPS), total=len(DUMPS)):
         # correcting for even vertical pixel data being generated
         # from and upward sweep of the antenna, and vice versa for the odd case
-        if PXL[0] // 2 == PXL[0] / 2:
+        if PXL[0] % 2 == 0:
             reverse = 0
         else:
             reverse = vertical - 1
