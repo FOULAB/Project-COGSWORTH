@@ -1,10 +1,21 @@
 #!/usr/bin/env pypy
+# These make division and print work like in python 3, making the code compatible in
+# both versions.
+from __future__ import division
+from __future__ import print_function
+
+# Make sure that we are using the generator function for range in both python 2 and 3.
+import builtins
+if hasattr(builtins, 'xrange'):
+    range = xrange
+
 import os
 import time
-import tqdm
-import multiprocessing as mp
+
 from PIL import Image
+import multiprocessing as mp
 import numpy
+import tqdm
 
 # 70
 # 80
@@ -27,7 +38,7 @@ def processing(params):
 
     ## DATA MANIP START
     average = numpy.average(tech)
-    colour = int( (average/100)*255 )
+    colour = int( (average*255)//100 )
 
     hold = [ pStamp, pI, pJ, VER, HOR, colour ]
     return hold
@@ -35,16 +46,18 @@ def processing(params):
 
 
 def main():
+    start = time.time()
+
     VERTICAL = 80
-    HORIZONTAL = 270
-    
+    HORIZONTAL = 206
+
     IMG = Image.new('RGB', (HORIZONTAL, VERTICAL), 'black')
     PIXELS = IMG.load()
 
     # create file processing queue
     DUMPS = []
-    for i in xrange(HORIZONTAL):
-        for j in xrange(VERTICAL):
+    for i in range(HORIZONTAL):
+        for j in range(VERTICAL):
             DUMPS.append([ STAMP, i, j, VERTICAL, HORIZONTAL, 0])
 
     # create threadpool and process the data
@@ -54,7 +67,7 @@ def main():
     for PXL in tqdm.tqdm(pewl.imap_unordered(processing, DUMPS), total=len(DUMPS)):
         # correcting for even vertical pixel data being generated
         # from and upward sweep of the antenna, and vice versa for the odd case
-        if PXL[1]/2 == PXL[1]/2.0:
+        if PXL[1]//2 == PXL[1]/2:
             reverse = 0
         else:
             reverse = VERTICAL - 1
