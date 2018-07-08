@@ -34,8 +34,7 @@ def processing(params):
     #print("{0} : [{1},{2}]".format(average,pI,pJ)) # DEBUG
 
 
-if __name__ == '__main__':
-    
+def main():
     VERTICAL = 80
     HORIZONTAL = 270
     
@@ -65,3 +64,7 @@ if __name__ == '__main__':
     print("done.")
         
     IMG.show()
+
+
+if __name__ == '__main__':
+    main()
