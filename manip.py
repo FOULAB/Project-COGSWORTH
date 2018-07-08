@@ -73,9 +73,9 @@ def main():
             reverse = VERTICAL - 1
 
         PIXELS[ HORIZONTAL-1-PXL[1], abs(PXL[2] - reverse) ] = (PXL[5], PXL[5], PXL[5])
-        
-    print("done.")
-        
+
+    print("Done. Processing took: %d s." % int(time.time() - start))
+
     IMG.show()
 
 
