@@ -8,8 +8,8 @@ from __future__ import print_function
 
 # Make sure that we are using the generator function for range in both python 2 and 3.
 # (In python 3 range is like xrange, and xrange doesn't exist)
-import builtins
-if hasattr(builtins, 'xrange'):
+import sys
+if sys.version_info.major == 2:
     range = xrange
 
 # Standard libraries.
