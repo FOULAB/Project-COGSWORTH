@@ -1,9 +1,7 @@
 #!/usr/bin/env pypy
 import os
 import time
-import tqdm
-import multiprocessing as mp
-from bitstring import ConstBitStream
+import numpy as np
 from PIL import Image
 
 # 70
@@ -17,72 +15,33 @@ from PIL import Image
 #STAMP = "749113"
 STAMP = "1297209"
 
-def handleDump(fileObj):
-    tech = []
-    raw = ConstBitStream(fileObj)
-    try:
-        while True:
-            tech.append(raw.read('floatle:32'))
-    except:
-        pass
-    del(raw)
-    return tech 
-
-
-def processing(params):
-    pStamp = params[0]
-    pI = params[1]
-    pJ = params[2]
-    VER = params[3]
-    HOR = params[4]
-    PXLS = params[5]
-    
-    filen = open( 'SAMPLE_{0}_{1}_{2}.dmp'.format(pStamp, str(pI), str(pJ) ), 'rb')
-    
-    ## put data in RAM
-    tech = handleDump(filen)
-        
-    filen.close()
-    del(filen)
-
-    ## DATA MANIP START
-    average = sum(tech)/float(len(tech))
-    
+def processing(pStamp, pI, pJ):
+    filen = 'SAMPLE_{0}_{1}_{2}.dmp'.format(pStamp, pI, pJ)
+    # numpy is very fast at reading binary files
+    data = np.fromfile(filen, dtype=np.float32)
+    average = np.mean(data)
     colour = int( (average/100)*255 )
-    hold = [ pStamp, pI, pJ, VER, HOR, colour ]
-    del(tech)
-    return hold
-    #print("{0} : [{1},{2}]".format(average,pI,pJ)) # DEBUG
-
+    # return just the output value, so we're not passing lists around
+    return colour
 
 if __name__ == '__main__':
+    t0 = time.time()
     
     VERTICAL = 80
     HORIZONTAL = 270
     
-    IMG = Image.new('RGB', (HORIZONTAL, VERTICAL), 'black')
-    PIXELS = IMG.load()
+    pixels = np.zeros((HORIZONTAL, VERTICAL, 3), dtype=np.uint8)
 
-    # create file processing queue
-    DUMPS = []
+    # in principle these loops could be parallelised, but in practice it's IO-limited
     for i in xrange(HORIZONTAL):
         for j in xrange(VERTICAL):
-            DUMPS.append([ STAMP, i, j, VERTICAL, HORIZONTAL, 0])
-
-    # create threadpool and process the data
-    pewl = mp.Pool(3)
-    print("processing...")
-
-    for PXL in tqdm.tqdm(pewl.imap_unordered(processing, DUMPS), total=len(DUMPS)):
-        # correcting for even vertical pixel data being generated
-        # from and upward sweep of the antenna, and vice versa for the odd case
-        if PXL[1]/2 == PXL[1]/2.0:
-            reverse = 0
-        else:
-            reverse = VERTICAL - 1
-
-        PIXELS[ HORIZONTAL-1-PXL[1], abs(PXL[2] - reverse) ] = (PXL[5], PXL[5], PXL[5])
-        
-    print("done.")
+            col = processing(STAMP, i, j)
+            # correcting for even vertical pixel data being generated
+            # from and upward sweep of the antenna, and vice versa for the odd case
+            if i%2: j = VERTICAL-1-j
+            pixels[HORIZONTAL-1-i, j, :] = col
+    
+    IMG = Image.fromarray(pixels)
+    print("done in", time.time()-t0)
         
     IMG.show()
